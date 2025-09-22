@@ -1,13 +1,15 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Console;
 
 public sealed class AppSettings
 {
-    public required SiloSettings SiloSettings { get; init; }
+    [Required] public required SiloSettings SiloSettings { get; init; }
 }
 
 public sealed class SiloSettings
 {
-    public required string ClusterId { get; init; }
-    public required string PgStorageConnection { get; init; }
-    public required string PgStorageInvatiant { get; init; }
+    [Required] [MinLength(5)] public required string ClusterId { get; init; }
+    [Required] [MinLength(16)] public required string PgStorageConnection { get; init; }
+    [Required] [MinLength(1)] public required string PgStorageInvatiant { get; init; }
 }

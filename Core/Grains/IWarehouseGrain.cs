@@ -8,9 +8,11 @@ namespace Core.Grains;
 public interface IWarehouseGrain : IGrainWithIntegerKey
 {
     [Alias("CreateWarehouseAsync")]
+    [OneWay]
     ValueTask CreateWarehouseAsync(CreateWarehouse createWarehouse, CancellationToken cancellationToken = default);
 
     [Alias("UpdateWarehouseAsync")]
+    [OneWay]
     ValueTask UpdateWarehouseAsync(UpdateWarehouse updateWarehouse, CancellationToken cancellationToken = default);
 
     [Alias("GetWarehouseAsync")]

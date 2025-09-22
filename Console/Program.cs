@@ -1,32 +1,29 @@
 ﻿using System.Text.Json;
-using Microsoft.Extensions.Logging;
 
 HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
 
-IConfigurationSection settingsSection =
-    builder.Configuration.GetSection(nameof(AppSettings)) ?? throw new Exception("Settings not found");
+builder.Services.AddOptions<AppSettings>().Bind(builder.Configuration.GetSection("AppSettings"))
+    .ValidateDataAnnotations().ValidateOnStart();
+builder.Services.AddOptions<SiloSettings>().Bind(builder.Configuration.GetSection("AppSettings:SiloSettings"))
+    .ValidateDataAnnotations().ValidateOnStart();
 
-builder.Services.Configure<AppSettings>(settingsSection);
-
-AppSettings appSettings =
-    settingsSection.Get<AppSettings>() ?? throw new Exception(
-        "AppSettings not found"
-    );
+ServiceProvider sProvider = builder.Services.BuildServiceProvider();
+AppSettings appSettings = sProvider.GetRequiredService<IOptionsSnapshot<AppSettings>>().Value;
+SiloSettings siloSettings = sProvider.GetRequiredService<IOptionsSnapshot<SiloSettings>>().Value;
 
 builder.UseOrleansClient(client =>
 {
     client.UseAdoNetClustering(opt =>
     {
         opt.ConnectionString =
-            appSettings.SiloSettings.PgStorageConnection;
-        opt.Invariant = "Npgsql";
+            siloSettings.PgStorageConnection;
+        opt.Invariant = siloSettings.PgStorageInvatiant;
     });
 
-    client.Configure<ClusterOptions>(opt => { opt.ClusterId = appSettings.SiloSettings.ClusterId; });
+    client.Configure<ClusterOptions>(opt => { opt.ClusterId = siloSettings.ClusterId; });
 });
 
 using IHost host = builder.Build();
-
 await host.StartAsync();
 
 IClusterClient client = host.Services.GetRequiredService<IClusterClient>();

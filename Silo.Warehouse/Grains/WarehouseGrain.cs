@@ -2,27 +2,18 @@ using Orleans.Concurrency;
 
 namespace Silo.Warehouse.Grains;
 
-[ResourceOptimizedPlacement]
-[KeepAlive]
-public class WarehouseGrain : Grain, IWarehouseGrain
+public class WarehouseGrain : ApplicationGrain<WarehouseModel>, IWarehouseGrain
 {
     private readonly IOptionsMonitor<AppSettings> _appSettings;
-    private readonly Channel<bool> _flushChannel;
     private readonly ILogger<WarehouseGrain> _logger;
-    private readonly IPersistentState<WarehouseModel> _warehouseState;
 
-    public WarehouseGrain(
-        ILogger<WarehouseGrain> logger,
-        IOptionsMonitor<AppSettings> appSettings,
-        IPersistentStateFactory stateFactory
-    )
+    public WarehouseGrain(IOptionsMonitor<AppSettings> appSettings, ILoggerFactory loggerFactory,
+        IPersistentStateFactory stateFactory) : base(loggerFactory,
+        stateFactory, appSettings.CurrentValue.SiloSettings.WarehouseState,
+        appSettings.CurrentValue.SiloSettings.WarehouseStorage)
     {
-        _logger = logger;
+        _logger = loggerFactory.CreateLogger<WarehouseGrain>();
         _appSettings = appSettings;
-        _warehouseState = stateFactory.Create<WarehouseModel>(GrainContext,
-            new PersistentStateAttribute(_appSettings.CurrentValue.SiloSettings.WarehouseState,
-                _appSettings.CurrentValue.SiloSettings.WarehouseStorage));
-        _flushChannel = Channel.CreateBounded<bool>(1);
     }
 
     [OneWay]
@@ -59,52 +50,24 @@ public class WarehouseGrain : Grain, IWarehouseGrain
         return ValueTask.CompletedTask;
     }
 
+    [ReadOnly]
     public ValueTask<WarehouseModel> GetWarehouseAsync(GetWarehouse getWarehouse,
         CancellationToken cancellationToken = default)
     {
         _logger.LogInformation(new EventId(_appSettings.CurrentValue.MethodCallId), "Get Warehouse {@GetWarehouse}",
             getWarehouse);
-        return ValueTask.FromResult(_warehouseState.State);
+        return ValueTask.FromResult(ApplicationState);
     }
 
     public override Task OnActivateAsync(CancellationToken cancellationToken)
     {
         _logger.LogWarning(new EventId(_appSettings.CurrentValue.ActivationId), "WarehouseGrain OnActivateAsync");
-        _ = FlushChannel();
         return base.OnActivateAsync(cancellationToken);
     }
 
-    public override async Task OnDeactivateAsync(DeactivationReason reason, CancellationToken cancellationToken)
+    public override Task OnDeactivateAsync(DeactivationReason reason, CancellationToken cancellationToken)
     {
         _logger.LogWarning(new EventId(_appSettings.CurrentValue.DeactivationId), "WarehouseGrain OnDeactivateAsync");
-        _flushChannel.Writer.TryComplete();
-        await _warehouseState.WriteStateAsync(cancellationToken);
-        await base.OnDeactivateAsync(reason, cancellationToken);
-    }
-
-    private void Mutate(Action<WarehouseModel> mutation, [CallerMemberName] string caller = "",
-        [CallerLineNumber] int line = 0)
-    {
-        _logger.LogTrace(new EventId(_appSettings.CurrentValue.InnerTraceId), "caller {caller}, line {line}",
-            caller, line);
-
-        mutation(_warehouseState.State);
-        _flushChannel.Writer.TryWrite(true);
-    }
-
-    private void Mutate(Func<WarehouseModel> mutation, [CallerMemberName] string caller = "",
-        [CallerLineNumber] int line = 0)
-    {
-        _logger.LogTrace(new EventId(_appSettings.CurrentValue.InnerTraceId), "caller {caller}, line {line}",
-            caller, line);
-
-        _warehouseState.State = mutation();
-        _flushChannel.Writer.TryWrite(true);
-    }
-
-    private async Task FlushChannel()
-    {
-        await foreach (bool _ in _flushChannel.Reader.ReadAllAsync())
-            await _warehouseState.WriteStateAsync(CancellationToken.None);
+        return base.OnDeactivateAsync(reason, cancellationToken);
     }
 }
