@@ -1,0 +1,9 @@
+{
+    "editor.wordWrap": "on",
+    "editor.wordWrapColumn": 100,
+    "[csharp]":{
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "csharpier.csharpier-vscode"
+    },
+    "dotnet.defaultSolution": "IdentityPlatform.sln"
+}

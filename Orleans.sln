@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{A87A0B84-261C-425C-8799-6AC86B2A0F69}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Backend", "Backend", "{416A5FDE-A9AA-40AD-B5D6-14898BED6177}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Client", "Client", "{F82D4B4F-DD2F-499D-9CA6-37B817246A72}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silo.Warehouse", "Silo.Warehouse\Silo.Warehouse.csproj", "{C808499B-0847-4556-B139-5C837E9E5D77}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Console", "Console\Console.csproj", "{CDB2E8F5-87F9-41F4-A076-4D1FCFB4E5F4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A87A0B84-261C-425C-8799-6AC86B2A0F69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A87A0B84-261C-425C-8799-6AC86B2A0F69}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A87A0B84-261C-425C-8799-6AC86B2A0F69}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A87A0B84-261C-425C-8799-6AC86B2A0F69}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C808499B-0847-4556-B139-5C837E9E5D77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C808499B-0847-4556-B139-5C837E9E5D77}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C808499B-0847-4556-B139-5C837E9E5D77}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C808499B-0847-4556-B139-5C837E9E5D77}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDB2E8F5-87F9-41F4-A076-4D1FCFB4E5F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDB2E8F5-87F9-41F4-A076-4D1FCFB4E5F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDB2E8F5-87F9-41F4-A076-4D1FCFB4E5F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDB2E8F5-87F9-41F4-A076-4D1FCFB4E5F4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C808499B-0847-4556-B139-5C837E9E5D77} = {416A5FDE-A9AA-40AD-B5D6-14898BED6177}
+		{CDB2E8F5-87F9-41F4-A076-4D1FCFB4E5F4} = {F82D4B4F-DD2F-499D-9CA6-37B817246A72}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,26 @@
+{
+    "configurations": [
+        {
+            "name": "backend",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build Silo.Warehouse",
+            "program": "${workspaceFolder}/Silo.Warehouse/bin/Debug/net8.0/Silo.Warehouse.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/Silo.Warehouse/",
+            "stopAtEntry": false,
+            "envFile": "${workspaceFolder}/.env",
+        },
+        {
+            "name": "console",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build Console",
+            "program": "${workspaceFolder}/Console/bin/Debug/net8.0/Console.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/Console/",
+            "stopAtEntry": false,
+            "envFile": "${workspaceFolder}/.env",
+        }
+    ]
+}
