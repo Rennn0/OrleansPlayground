@@ -1,4 +1,6 @@
-﻿HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
+﻿using StackExchange.Redis;
+
+HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
 
 builder.Services.AddOptions<AppSettings>().Bind(builder.Configuration.GetSection("AppSettings"))
     .ValidateDataAnnotations().ValidateOnStart();
@@ -20,13 +22,27 @@ builder.UseOrleans(silo =>
     });
 
     silo.AddAdoNetGrainStorage(
-        appSettings.SiloSettings.WarehouseStorage,
+            siloSettings.AdoNetStorage,
+            opt =>
+            {
+                opt.Invariant = siloSettings.PgStorageInvatiant;
+                opt.ConnectionString = siloSettings.PgStorageConnection;
+            })
+        ;
+
+    silo.AddRedisGrainStorage(siloSettings.RedisStorage,
         opt =>
         {
-            opt.Invariant = siloSettings.PgStorageInvatiant;
-            opt.ConnectionString = siloSettings.PgStorageConnection;
-        }
-    );
+            opt.ConfigurationOptions = new ConfigurationOptions
+            {
+                EndPoints = { siloSettings.RedisStorageConnection },
+                AbortOnConnectFail = siloSettings.RedisAbortOnConnectFail,
+                DefaultDatabase = siloSettings.RedisDbNumber,
+                Password = siloSettings.RedisStoragePassword,
+                User = siloSettings.RedisStorageUser,
+                ConnectRetry = siloSettings.RedisConnectRetry
+            };
+        });
 
     silo.Configure<ClusterOptions>(opt =>
     {

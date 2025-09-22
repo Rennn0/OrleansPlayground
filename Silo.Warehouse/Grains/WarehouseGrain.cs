@@ -10,7 +10,7 @@ public class WarehouseGrain : ApplicationGrain<WarehouseModel>, IWarehouseGrain
     public WarehouseGrain(IOptionsMonitor<AppSettings> appSettings, ILoggerFactory loggerFactory,
         IPersistentStateFactory stateFactory) : base(loggerFactory,
         stateFactory, appSettings.CurrentValue.SiloSettings.WarehouseState,
-        appSettings.CurrentValue.SiloSettings.WarehouseStorage)
+        appSettings.CurrentValue.SiloSettings.RedisStorage)
     {
         _logger = loggerFactory.CreateLogger<WarehouseGrain>();
         _appSettings = appSettings;
