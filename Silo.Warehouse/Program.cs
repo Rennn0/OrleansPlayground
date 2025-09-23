@@ -7,9 +7,9 @@ builder.Services.AddOptions<AppSettings>().Bind(builder.Configuration.GetSection
 builder.Services.AddOptions<SiloSettings>().Bind(builder.Configuration.GetSection("AppSettings:SiloSettings"))
     .ValidateDataAnnotations().ValidateOnStart();
 
-ServiceProvider sProvider = builder.Services.BuildServiceProvider();
-AppSettings appSettings = sProvider.GetRequiredService<IOptionsSnapshot<AppSettings>>().Value;
-SiloSettings siloSettings = sProvider.GetRequiredService<IOptionsSnapshot<SiloSettings>>().Value;
+ServiceProvider sp = builder.Services.BuildServiceProvider();
+AppSettings appSettings = sp.GetRequiredService<IOptionsSnapshot<AppSettings>>().Value;
+SiloSettings siloSettings = sp.GetRequiredService<IOptionsSnapshot<SiloSettings>>().Value;
 
 builder.Environment.EnvironmentName = appSettings.Environment;
 
@@ -21,14 +21,20 @@ builder.UseOrleans(silo =>
         opt.ConnectionString = siloSettings.PgStorageConnection;
     });
 
+    silo.UseAdoNetReminderService(opt =>
+    {
+        opt.Invariant = siloSettings.PgStorageInvatiant;
+        opt.ConnectionString = siloSettings.PgStorageConnection;
+    });
+
     silo.AddAdoNetGrainStorage(
-            siloSettings.AdoNetStorage,
-            opt =>
-            {
-                opt.Invariant = siloSettings.PgStorageInvatiant;
-                opt.ConnectionString = siloSettings.PgStorageConnection;
-            })
-        ;
+        siloSettings.AdoNetStorage,
+        opt =>
+        {
+            opt.Invariant = siloSettings.PgStorageInvatiant;
+            opt.ConnectionString = siloSettings.PgStorageConnection;
+        });
+
 
     silo.AddRedisGrainStorage(siloSettings.RedisStorage,
         opt =>

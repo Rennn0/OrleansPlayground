@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
 using Orleans.Concurrency;
@@ -53,7 +55,10 @@ public abstract class ApplicationGrain<TState> : Grain where TState : class
     /// <param name="mutator"></param>
     protected virtual bool Mutate(Action<TState> mutator)
     {
+        _logger.LogInformation(new EventId(-1), "Mutating application state");
+        _logger.LogTrace("before {@State}", Stringify(_persistentState.State));
         mutator(_persistentState.State);
+        _logger.LogTrace("after {@State}", Stringify(_persistentState.State));
         return AddFlush();
     }
 
@@ -63,7 +68,10 @@ public abstract class ApplicationGrain<TState> : Grain where TState : class
     /// <param name="mutator"></param>
     protected virtual bool Mutate(Func<TState> mutator)
     {
+        _logger.LogInformation(new EventId(-2), "Creating application state");
+        _logger.LogTrace("before {@State}", Stringify(_persistentState.State));
         _persistentState.State = mutator();
+        _logger.LogTrace("after {@State}", Stringify(_persistentState.State));
         return AddFlush();
     }
 
@@ -74,13 +82,20 @@ public abstract class ApplicationGrain<TState> : Grain where TState : class
 
     protected virtual Task OnFlush()
     {
-        _logger.LogInformation("Flushing application state");
+        _logger.LogInformation(new EventId(-3), "Flushing application state");
+        _logger.LogTrace("state obj {Sttate}", Stringify(_persistentState.State));
         return _persistentState.WriteStateAsync();
     }
 
     private async Task FlushBehavior()
     {
         await foreach (bool _ in _flushChannel.Reader.ReadAllAsync()) await OnFlush();
+    }
+
+    protected string Stringify(object obj)
+    {
+        return JsonSerializer.Serialize(obj,
+            new JsonSerializerOptions { WriteIndented = true, ReferenceHandler = ReferenceHandler.IgnoreCycles });
     }
 }
 
