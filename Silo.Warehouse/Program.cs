@@ -1,4 +1,5 @@
-﻿using StackExchange.Redis;
+﻿using System.Net;
+using StackExchange.Redis;
 
 HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
 
@@ -56,13 +57,20 @@ builder.UseOrleans(silo =>
         opt.ServiceId = siloSettings.ServiceId;
     });
 
+    silo.Configure<EndpointOptions>(opt =>
+    {
+        opt.SiloPort = siloSettings.SiloPort;
+        opt.GatewayPort = siloSettings.GatewayPort;
+        opt.AdvertisedIPAddress =
+            string.IsNullOrEmpty(siloSettings.AdvertiseIpAddress)
+                ? IPAddress.Loopback
+                : IPAddress.Parse(siloSettings.AdvertiseIpAddress);
+        opt.GatewayListeningEndpoint = new IPEndPoint(IPAddress.Loopback, 40_000);
+        opt.SiloListeningEndpoint = new IPEndPoint(IPAddress.Any, 50_000);
+    });
+
     if (appSettings.SiloSettings.UseDashboard)
         silo.UseDashboard(opt => { opt.Port = siloSettings.DashboardPort; });
-
-    silo.ConfigureEndpoints(
-        siloSettings.SiloPort,
-        siloSettings.GatewayPort
-    );
 });
 
 await builder.Build().RunAsync();

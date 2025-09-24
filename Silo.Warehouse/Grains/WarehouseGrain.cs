@@ -15,8 +15,8 @@ public class WarehouseGrain : ApplicationGrain<WarehouseModel>, IWarehouseGrain,
         _logger = loggerFactory.CreateLogger<WarehouseGrain>();
         _appSettings = appSettings;
 
-        this.RegisterOrUpdateReminder("reminder1", TimeSpan.Zero, TimeSpan.FromMinutes(1));
-        this.RegisterOrUpdateReminder("reminder2", TimeSpan.FromSeconds(6), TimeSpan.FromSeconds(61));
+        // this.RegisterOrUpdateReminder("reminder1", TimeSpan.Zero, TimeSpan.FromMinutes(1));
+        // this.RegisterOrUpdateReminder("reminder2", TimeSpan.FromSeconds(6), TimeSpan.FromSeconds(61));
     }
 
     public async Task ReceiveReminder(string reminderName, TickStatus status)
