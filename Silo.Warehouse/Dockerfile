@@ -3,9 +3,12 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /app
 COPY Core ./Core
 COPY Silo.Warehouse ./Silo.Warehouse
-RUN dotnet restore Silo.Warehouse/Silo.Warehouse.csproj
-RUN dotnet build Silo.Warehouse/Silo.Warehouse.csproj -c $BUILD_CONFIGURATION -o /app/build
-RUN ls /app/build
-RUN cat /app/build/appsettings.json
+WORKDIR /app/Silo.Warehouse
+RUN dotnet restore
+RUN dotnet build -c $BUILD_CONFIGURATION -o /app/build
+
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+WORKDIR /app
+COPY --from=build /app/build ./
 EXPOSE 5000
-ENTRYPOINT ["dotnet", "build/Silo.Warehouse.dll"]
+ENTRYPOINT ["dotnet", "Silo.Warehouse.dll"]
