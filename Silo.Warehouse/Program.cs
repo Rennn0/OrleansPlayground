@@ -1,5 +1,5 @@
-﻿using System.Net;
-using StackExchange.Redis;
+﻿using Azure.Data.Tables;
+using Azure.Storage.Blobs;
 
 HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
 
@@ -16,6 +16,21 @@ builder.Environment.EnvironmentName = appSettings.Environment;
 
 builder.UseOrleans(silo =>
 {
+#if CLOUD
+    silo.UseAzureStorageClustering(opt =>
+    {
+        opt.TableServiceClient = new TableServiceClient(siloSettings.AzureBlobConnection);
+    });
+
+    silo.UseAzureTableReminderService(opt =>
+    {
+        opt.TableServiceClient = new TableServiceClient(siloSettings.AzureBlobConnection);
+    });
+
+    silo.AddAzureBlobGrainStorage(siloSettings.AzureStorage,
+        opt => { opt.BlobServiceClient = new BlobServiceClient(siloSettings.AzureBlobConnection); });
+
+#elif LOCAL_INFRASTRUCTURE
     silo.UseAdoNetClustering(opt =>
     {
         opt.Invariant = siloSettings.PgStorageInvatiant;
@@ -36,7 +51,6 @@ builder.UseOrleans(silo =>
             opt.ConnectionString = siloSettings.PgStorageConnection;
         });
 
-
     silo.AddRedisGrainStorage(siloSettings.RedisStorage,
         opt =>
         {
@@ -50,6 +64,7 @@ builder.UseOrleans(silo =>
                 ConnectRetry = siloSettings.RedisConnectRetry
             };
         });
+#endif
 
     silo.Configure<ClusterOptions>(opt =>
     {
@@ -57,17 +72,17 @@ builder.UseOrleans(silo =>
         opt.ServiceId = siloSettings.ServiceId;
     });
 
-    silo.Configure<EndpointOptions>(opt =>
-    {
-        opt.SiloPort = siloSettings.SiloPort;
-        opt.GatewayPort = siloSettings.GatewayPort;
-        opt.AdvertisedIPAddress =
-            string.IsNullOrEmpty(siloSettings.AdvertiseIpAddress)
-                ? IPAddress.Loopback
-                : IPAddress.Parse(siloSettings.AdvertiseIpAddress);
-        opt.GatewayListeningEndpoint = new IPEndPoint(IPAddress.Loopback, 40_000);
-        opt.SiloListeningEndpoint = new IPEndPoint(IPAddress.Any, 50_000);
-    });
+    // silo.Configure<EndpointOptions>(opt =>
+    // {
+    //     opt.SiloPort = siloSettings.SiloPort;
+    //     opt.GatewayPort = siloSettings.GatewayPort;
+    //     opt.AdvertisedIPAddress =
+    //         string.IsNullOrEmpty(siloSettings.AdvertiseIpAddress)
+    //             ? IPAddress.Loopback
+    //             : IPAddress.Parse(siloSettings.AdvertiseIpAddress);
+    //     opt.GatewayListeningEndpoint = new IPEndPoint(IPAddress.Loopback, 40_000);
+    //     opt.SiloListeningEndpoint = new IPEndPoint(IPAddress.Any, 50_000);
+    // });
 
     if (appSettings.SiloSettings.UseDashboard)
         silo.UseDashboard(opt => { opt.Port = siloSettings.DashboardPort; });

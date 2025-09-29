@@ -8,6 +8,11 @@
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <DefineConstants>CLOUD</DefineConstants>
+        <!--        <DefineConstants>LOCAL_INFRASTRUCTURE</DefineConstants>-->
+    </PropertyGroup>
+
     <ItemGroup>
         <Content Include="appsettings.json">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>

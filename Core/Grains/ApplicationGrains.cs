@@ -80,7 +80,7 @@ public abstract class ApplicationGrain<TState> : Grain where TState : class
         return _flushChannel.Writer.TryWrite(true);
     }
 
-    protected virtual Task OnFlush()
+    protected virtual Task OnFlushAsync()
     {
         _logger.LogInformation(new EventId(-3), "Flushing application state");
         _logger.LogTrace("state obj {Sttate}", Stringify(_persistentState.State));
@@ -89,13 +89,18 @@ public abstract class ApplicationGrain<TState> : Grain where TState : class
 
     private async Task FlushBehavior()
     {
-        await foreach (bool _ in _flushChannel.Reader.ReadAllAsync()) await OnFlush();
+        await foreach (bool _ in _flushChannel.Reader.ReadAllAsync()) await OnFlushAsync();
     }
 
     protected string Stringify(object obj)
     {
         return JsonSerializer.Serialize(obj,
             new JsonSerializerOptions { WriteIndented = true, ReferenceHandler = ReferenceHandler.IgnoreCycles });
+    }
+
+    protected Task ClearApplicationStateAsync()
+    {
+        return _persistentState.ClearStateAsync();
     }
 }
 
@@ -149,8 +154,8 @@ public abstract class ApplicationGrain<TState1, TState2> : ApplicationGrain<TSta
         return AddFlush();
     }
 
-    protected override Task OnFlush()
+    protected override Task OnFlushAsync()
     {
-        return Task.WhenAll(_persistentState.WriteStateAsync(), base.OnFlush());
+        return Task.WhenAll(_persistentState.WriteStateAsync(), base.OnFlushAsync());
     }
 }

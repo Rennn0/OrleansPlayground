@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using Azure.Data.Tables;
 
 HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
 
@@ -13,11 +14,18 @@ SiloSettings siloSettings = sProvider.GetRequiredService<IOptionsSnapshot<SiloSe
 
 builder.UseOrleansClient(client =>
 {
-    client.UseAdoNetClustering(opt =>
+    // client.UseAdoNetClustering(opt =>
+    // {
+    //     opt.ConnectionString =
+    //         siloSettings.PgStorageConnection;
+    //     opt.Invariant = siloSettings.PgStorageInvatiant;
+    // });
+
+    client.UseAzureStorageClustering(opt =>
     {
-        opt.ConnectionString =
-            siloSettings.PgStorageConnection;
-        opt.Invariant = siloSettings.PgStorageInvatiant;
+        opt.TableServiceClient =
+            new TableServiceClient(
+                "");
     });
 
     client.Configure<ClusterOptions>(opt => { opt.ClusterId = siloSettings.ClusterId; });

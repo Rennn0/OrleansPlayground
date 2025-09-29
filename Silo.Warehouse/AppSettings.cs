@@ -38,5 +38,7 @@ public sealed class SiloSettings
     [Required] [MinLength(8)] public required string RedisStorageConnection { get; init; }
     [Required] [MinLength(12)] public required string RedisStoragePassword { get; init; }
     [Required] [MinLength(8)] public required string RedisStorageUser { get; init; }
+    [Required] [MinLength(8)] public required string AzureStorage { get; init; }
+    [Required] [MinLength(8)] public required string AzureBlobConnection { get; init; }
     public string? AdvertiseIpAddress { get; init; }
 }
