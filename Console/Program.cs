@@ -24,8 +24,7 @@ builder.UseOrleansClient(client =>
     client.UseAzureStorageClustering(opt =>
     {
         opt.TableServiceClient =
-            new TableServiceClient(
-                "");
+            new TableServiceClient(siloSettings.AzureBlobConnection);
     });
 
     client.Configure<ClusterOptions>(opt => { opt.ClusterId = siloSettings.ClusterId; });
