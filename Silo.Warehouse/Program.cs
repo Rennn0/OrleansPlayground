@@ -1,4 +1,5 @@
-﻿using Azure.Data.Tables;
+﻿using System.Net;
+using Azure.Data.Tables;
 using Azure.Storage.Blobs;
 
 HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
@@ -65,25 +66,22 @@ builder.UseOrleans(silo =>
             };
         });
 #endif
-
     silo.Configure<ClusterOptions>(opt =>
     {
         opt.ClusterId = siloSettings.ClusterId;
         opt.ServiceId = siloSettings.ServiceId;
     });
 
-    // auu
-    // silo.Configure<EndpointOptions>(opt =>
-    // {
-    //     opt.SiloPort = siloSettings.SiloPort;
-    //     opt.GatewayPort = siloSettings.GatewayPort;
-    //     opt.AdvertisedIPAddress =
-    //         string.IsNullOrEmpty(siloSettings.AdvertiseIpAddress)
-    //             ? IPAddress.Loopback
-    //             : IPAddress.Parse(siloSettings.AdvertiseIpAddress);
-    //     opt.GatewayListeningEndpoint = new IPEndPoint(IPAddress.Loopback, 40_000);
-    //     opt.SiloListeningEndpoint = new IPEndPoint(IPAddress.Any, 50_000);
-    // });
+    silo.Configure<EndpointOptions>(opt =>
+    {
+        opt.SiloPort = siloSettings.SiloPort;
+        opt.GatewayPort = siloSettings.GatewayPort;
+        if (!string.IsNullOrEmpty(siloSettings.AdvertiseIpAddress))
+            opt.AdvertisedIPAddress =
+                IPAddress.Parse(siloSettings.AdvertiseIpAddress);
+        opt.GatewayListeningEndpoint = new IPEndPoint(IPAddress.Any, 40_000);
+        opt.SiloListeningEndpoint = new IPEndPoint(IPAddress.Any, 50_000);
+    });
 
 
     if (appSettings.SiloSettings.UseDashboard)
