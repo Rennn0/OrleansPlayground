@@ -5,7 +5,7 @@ WORKDIR /app
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["Silo.Warehouse/Silo.Warehouse.csproj", "Silo.Warehouse/"]
+COPY ["./Silo.Warehouse.csproj", "Silo.Warehouse/"]
 RUN dotnet restore "Silo.Warehouse/Silo.Warehouse.csproj"
 COPY . .
 WORKDIR "/src/Silo.Warehouse"
