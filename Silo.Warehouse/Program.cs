@@ -70,7 +70,7 @@ builder.UseOrleans(silo =>
     {
         opt.ClusterId = siloSettings.ClusterId;
         opt.ServiceId = siloSettings.ServiceId;
-    }).ConfigureEndpoints(siloSettings.SiloPort, siloSettings.GatewayPort, listenOnAnyHostAddress: true);
+    }).ConfigureEndpoints(siloSettings.SiloPort, siloSettings.GatewayPort);
 
     if (appSettings.SiloSettings.UseDashboard)
         silo.UseDashboard(opt => { opt.Port = siloSettings.DashboardPort; });
