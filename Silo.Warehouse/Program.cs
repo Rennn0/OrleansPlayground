@@ -66,23 +66,17 @@ builder.UseOrleans(silo =>
             };
         });
 #endif
+
     silo.Configure<ClusterOptions>(opt =>
-    {
-        opt.ClusterId = siloSettings.ClusterId;
-        opt.ServiceId = siloSettings.ServiceId;
-    });
-
-    silo.Configure<EndpointOptions>(opt =>
-    {
-        opt.SiloPort = siloSettings.SiloPort;
-        opt.GatewayPort = siloSettings.GatewayPort;
-        if (!string.IsNullOrEmpty(siloSettings.AdvertiseIpAddress))
-            opt.AdvertisedIPAddress =
-                IPAddress.Parse(siloSettings.AdvertiseIpAddress);
-        opt.GatewayListeningEndpoint = new IPEndPoint(IPAddress.Any, 40_000);
-        opt.SiloListeningEndpoint = new IPEndPoint(IPAddress.Any, 50_000);
-    });
-
+        {
+            opt.ClusterId = siloSettings.ClusterId;
+            opt.ServiceId = siloSettings.ServiceId;
+        }).ConfigureEndpoints(siloSettings.SiloPort, siloSettings.GatewayPort, listenOnAnyHostAddress: true)
+        .Configure<EndpointOptions>(opt =>
+        {
+            if (!string.IsNullOrEmpty(siloSettings.AdvertiseIpAddress))
+                opt.AdvertisedIPAddress = IPAddress.Parse(siloSettings.AdvertiseIpAddress);
+        });
 
     if (appSettings.SiloSettings.UseDashboard)
         silo.UseDashboard(opt => { opt.Port = siloSettings.DashboardPort; });
