@@ -84,6 +84,7 @@ builder.UseOrleans(silo =>
     //     opt.SiloListeningEndpoint = new IPEndPoint(IPAddress.Any, 50_000);
     // });
 
+    
     if (appSettings.SiloSettings.UseDashboard)
         silo.UseDashboard(opt => { opt.Port = siloSettings.DashboardPort; });
 });
