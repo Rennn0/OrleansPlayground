@@ -5,5 +5,7 @@ COPY Core ./Core
 COPY Silo.Warehouse ./Silo.Warehouse
 RUN dotnet restore Silo.Warehouse/Silo.Warehouse.csproj
 RUN dotnet build Silo.Warehouse/Silo.Warehouse.csproj -c $BUILD_CONFIGURATION -o /app/build
+RUN ls /app/build
+RUN cat /app/build/appsettings.json
 EXPOSE 5000
 ENTRYPOINT ["dotnet", "build/Silo.Warehouse.dll"]
