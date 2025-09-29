@@ -4,7 +4,8 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /app
 
 # Copy only project file and restore
-COPY *.csproj ./
+COPY ../Core/Core.csproj ./
+COPY ./Silo.Warehouse.csproj ./
 RUN dotnet restore
 
 # Copy all sources and build
