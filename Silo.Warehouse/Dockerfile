@@ -1,22 +1,22 @@
-﻿# Use the .NET SDK for building
+﻿# Stage 1: Build
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
-WORKDIR /src
+WORKDIR /app
 
-# Copy the project file and restore dependencies
-COPY ./Silo.Warehouse.csproj ./
-RUN dotnet restore "./Silo.Warehouse.csproj"
+# Copy only project file and restore
+COPY *.csproj ./
+RUN dotnet restore
 
-# Copy the rest of the source
-COPY . .
-RUN dotnet build "./Silo.Warehouse.csproj" -c $BUILD_CONFIGURATION -o /app/build
+# Copy all sources and build
+COPY . ./
+RUN dotnet build -c $BUILD_CONFIGURATION -o /app/build
 
-# Publish the app
+# Stage 2: Publish
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./Silo.Warehouse.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
-# Runtime image
+# Stage 3: Runtime
 FROM mcr.microsoft.com/dotnet/runtime:8.0 AS final
 WORKDIR /app
 COPY --from=publish /app/publish .

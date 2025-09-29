@@ -41,7 +41,5 @@ jobs:
           containerAppName: silo-wh
           resourceGroup: DefaultResourceGroup-PAR
           imageToBuild: rennn0/silo-wh:${{ github.sha }}
-          _buildArgumentsKey_: |
-            _buildArgumentsValues_
 
 
