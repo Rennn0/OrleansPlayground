@@ -1,5 +1,4 @@
-﻿using System.Net;
-using Azure.Data.Tables;
+﻿using Azure.Data.Tables;
 using Azure.Storage.Blobs;
 
 HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
@@ -75,8 +74,6 @@ builder.UseOrleans(silo =>
     {
         opt.SiloPort = siloSettings.SiloPort;
         opt.GatewayPort = siloSettings.GatewayPort;
-
-        opt.AdvertisedIPAddress = IPAddress.Any;
     });
 
     if (appSettings.SiloSettings.UseDashboard)
