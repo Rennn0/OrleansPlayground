@@ -51,5 +51,5 @@ jobs:
           method: 'POST'
           customHeaders: '{"content-type":"application/json","x-api-key":"${{secrets.VM_API_KEY}}"}'
           data: '{"image": "${{ secrets.ORLEANS_REGISTRY_USERNAME }}/${{env.IMAGE_NAME}}:${{ github.run_number }}", "action": "deploy"}'
-          retries: 3
-          retryDelay: 10000
+          retry : 3
+          retryWait: 10000
