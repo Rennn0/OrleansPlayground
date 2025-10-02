@@ -27,5 +27,5 @@ jobs:
           file: ./Silo.Warehouse/Dockerfile
           push: true
            tags: |
-            ${{secrets.ORLEANS_REGISTRY_USERNAME}}/silo-wh:latest
-            ${{secrets.ORLEANS_REGISTRY_USERNAME}}/silo-wh:${{github.sha}}
+              ${{secrets.ORLEANS_REGISTRY_USERNAME}}/silo-wh:latest
+              ${{secrets.ORLEANS_REGISTRY_USERNAME}}/silo-wh:${{github.sha}}
