@@ -5,7 +5,7 @@ on:
   # Automatically trigger it when detected changes in repo
   push:
     branches: 
-      [ master ]
+      [ DONT_PUSH ]
     paths:
     - '**'
     - '.github/workflows/silois-AutoDeployTrigger-3d7b30aa-ced3-49e3-9873-3e814c24e508.yml'

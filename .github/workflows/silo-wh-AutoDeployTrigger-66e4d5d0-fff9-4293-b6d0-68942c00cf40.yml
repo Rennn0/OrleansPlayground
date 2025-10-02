@@ -5,7 +5,7 @@ on:
   # Automatically trigger it when detected changes in repo
   push:
     branches: 
-      [ master ]
+      [ DONT_PUSH ]
     paths:
     - '**'
     - '.github/workflows/silo-wh-AutoDeployTrigger-66e4d5d0-fff9-4293-b6d0-68942c00cf40.yml'

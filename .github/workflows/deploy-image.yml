@@ -6,6 +6,9 @@ on:
       - master
       - main
 
+  # Allow manual trigger 
+  workflow_dispatch:
+
 jobs: 
   build-and-push:
     runs-on: ubuntu-latest
@@ -30,7 +33,7 @@ jobs:
           file: ./Silo.Warehouse/Dockerfile
           push: true
           tags: |
-            ${{secrets.ORLEANS_REGISTRY_USERNAME}}/silo-wh:latest
             ${{secrets.ORLEANS_REGISTRY_USERNAME}}/silo-wh:${{github.sha}}
+            ${{secrets.ORLEANS_REGISTRY_USERNAME}}/silo-wh:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
